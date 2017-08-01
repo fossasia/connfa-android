@@ -14,6 +14,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.ls.api.AsyncDownloader;
+import com.ls.api.Processor;
 import com.ls.drupalcon.R;
 import com.ls.drupalcon.model.Model;
 import com.ls.drupalcon.model.UpdateRequest;
@@ -36,13 +38,15 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class HomeActivity extends StateActivity implements FilterDialog.OnFilterApplied {
+public class HomeActivity extends StateActivity implements FilterDialog.OnFilterApplied, AsyncDownloader.JsonDataSetter {
 
     private DrawerManager mFrManager;
     private DrawerAdapter mAdapter;
     private int mPresentTitle;
     private int mSelectedItem = 0;
     private boolean isIntentHandled = false;
+    private AsyncDownloader downloader;
+    private List<Track> tracks;
 
     private Toolbar mToolbar;
     private DrawerLayout mDrawerLayout;
@@ -164,10 +168,12 @@ public class HomeActivity extends StateActivity implements FilterDialog.OnFilter
     }
 
     public void initFilterDialog() {
+
+        downloader = new AsyncDownloader(this);
         new AsyncTask<Void, Void, List<EventListItem>>() {
             @Override
             protected List<EventListItem> doInBackground(Void... params) {
-                TracksManager tracksManager = Model.instance().getTracksManager();
+                TracksManager tracksManager = new TracksManager(tracks);
                 List<Track> trackList = tracksManager.getTracks();
                 List<Level> levelList = tracksManager.getLevels();
 
@@ -268,5 +274,11 @@ public class HomeActivity extends StateActivity implements FilterDialog.OnFilter
             ft.add(new IrrelevantTimezoneDialogFragment(), IrrelevantTimezoneDialogFragment.TAG);
             ft.commitAllowingStateLoss();
         }
+    }
+
+    @Override
+    public void setJsonData(String str) {
+        Processor processor = new Processor(str);
+        tracks = processor.trackProcessor();
     }
 }
