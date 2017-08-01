@@ -5,6 +5,7 @@ import com.ls.drupalcon.model.dao.TrackDao;
 import com.ls.drupalcon.model.data.Level;
 import com.ls.drupalcon.model.data.Track;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -13,7 +14,13 @@ public class TracksManager{
 
     private TrackDao mTrackDao;
 
-    public TracksManager(List<Track> tracks) {
+
+    public TracksManager() {
+        mTrackDao = new TrackDao();
+    }
+
+    public void setTracks(List<Track> tracks)
+    {
         mTrackDao = new TrackDao();
         mTrackDao.saveOrUpdateDataSafe(tracks);
         for (Track track : tracks) {

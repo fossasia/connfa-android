@@ -7,6 +7,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Varun Kumar on 7/27/2017.
@@ -14,15 +15,15 @@ import java.util.ArrayList;
 
 public class Processor {
     private String output;
-   // public ArrayList<SimpleJsonEvent> listEvent = new ArrayList<SimpleJsonEvent>();
-    public ArrayList<Track> listTrack = new ArrayList<Track>();
+
+    public List<Track> listTrack = new ArrayList<>();
 
 
     public Processor(String output) {
         this.output = output;
     }
 
-    public ArrayList<Track> trackProcessor()
+    public List<Track> trackProcessor()
     {
         try {
             JSONArray tracks = new JSONArray(output);
@@ -37,6 +38,8 @@ public class Processor {
                 track = new Track();
                 track.setId(tracksJSONObject.getLong("id"));
                 track.setName(tracksJSONObject.getString("name"));
+
+                listTrack.add(track);
             }
 
         }catch (JSONException e) {
