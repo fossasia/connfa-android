@@ -50,6 +50,7 @@ public class LocationFragment extends Fragment implements CustomMapFragment.OnAc
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setHasOptionsMenu(true);
     }
 
@@ -81,7 +82,10 @@ public class LocationFragment extends Fragment implements CustomMapFragment.OnAc
     }
 
     private void fillMapViews(List<Location> locations) {
-        if (mGoogleMap == null) return;
+
+        if (mGoogleMap == null){
+            return;
+        }
 
         if (locations == null || locations.isEmpty()) {
             TextView textViewAddress = (TextView) getView().findViewById(R.id.txtAddress);
@@ -89,6 +93,7 @@ public class LocationFragment extends Fragment implements CustomMapFragment.OnAc
         }
 
         for (int i = 0; i < locations.size(); i++) {
+
             Location location = locations.get(i);
             LatLng position = new LatLng(location.getLat(), location.getLon());
             mGoogleMap.addMarker(new MarkerOptions().position(position));

@@ -37,15 +37,13 @@ public class Processor {
 
             for (i = 0; i < locations.length(); i++) {
                 JSONObject locationJSONObject = locations.getJSONObject(i);
-
                 location = new Location();
+
                 location.setId(locationJSONObject.getLong("id"));
                 location.setName(locationJSONObject.getString("name"));
-                location.setAddress("Floor " + locationJSONObject.getJSONObject("floor") + ", " + locationJSONObject.getString("name"));
+                location.setAddress("Floor " + locationJSONObject.getLong("floor") + ", " + locationJSONObject.getString("name"));
                 location.setLat(locationJSONObject.getDouble("latitude"));
                 location.setLon(locationJSONObject.getDouble("longitude"));
-
-                Log.e("name:",locationJSONObject.getString("name"));
 
                 listLocation.add(location);
             }
@@ -53,6 +51,7 @@ public class Processor {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
         return listLocation;
     }
 
