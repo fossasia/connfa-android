@@ -1,5 +1,7 @@
 package com.ls.api;
 
+import android.util.Log;
+
 import com.ls.drupalcon.model.data.Location;
 import com.ls.drupalcon.model.data.Speaker;
 import com.ls.drupalcon.model.data.Track;
@@ -32,20 +34,30 @@ public class Processor {
             int i;
 
             Speaker speaker;
-
             DatabaseUrl databaseUrl = new DatabaseUrl();
 
-            for(i=0;i<speakers.length();i++)
-            {
+            for (i = 0; i < speakers.length(); i++) {
                 JSONObject speakerJSONObject = speakers.getJSONObject(i);
                 speaker = new Speaker();
 
                 speaker.setId(speakerJSONObject.getLong("id"));
                 String name = speakerJSONObject.getString("name");
-                String firstName = name.substring(0,name.indexOf(' '));
-                String lastName = name.substring(name.indexOf(' '));
-                speaker.setFirstName(firstName);
-                speaker.setLastName(lastName);
+
+                String firstName;
+                String lastName;
+
+                if (name.contains(" ")) {
+                    firstName = name.substring(0, name.indexOf(' '));
+                    lastName = name.substring(name.indexOf(' '));
+                    speaker.setFirstName(firstName);
+                    speaker.setLastName(lastName);
+                } else {
+                    firstName = name;
+                    lastName = "";
+                    speaker.setFirstName(firstName);
+                    speaker.setLastName(lastName);
+                }
+
                 speaker.setAvatarImageUrl(databaseUrl.getBaseUrl() + speakerJSONObject.getString("photo"));
                 speaker.setOrganization(speakerJSONObject.getString("organisation"));
                 speaker.setJobTitle(speakerJSONObject.getString("position"));

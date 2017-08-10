@@ -1,14 +1,5 @@
 package com.ls.ui.fragment;
 
-import com.ls.drupalcon.R;
-import com.ls.drupalcon.model.Model;
-import com.ls.drupalcon.model.UpdateRequest;
-import com.ls.drupalcon.model.UpdatesManager;
-import com.ls.drupalcon.model.data.Speaker;
-import com.ls.drupalcon.model.managers.SpeakerManager;
-import com.ls.ui.activity.SpeakerDetailsActivity;
-import com.ls.ui.adapter.SpeakersAdapter;
-
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
@@ -16,6 +7,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -27,10 +19,22 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.ls.api.AsyncDownloader;
+import com.ls.api.DatabaseUrl;
+import com.ls.api.Processor;
+import com.ls.drupalcon.R;
+import com.ls.drupalcon.model.Model;
+import com.ls.drupalcon.model.UpdateRequest;
+import com.ls.drupalcon.model.UpdatesManager;
+import com.ls.drupalcon.model.data.Speaker;
+import com.ls.drupalcon.model.managers.SpeakerManager;
+import com.ls.ui.activity.SpeakerDetailsActivity;
+import com.ls.ui.adapter.SpeakersAdapter;
+
 import java.util.List;
 
 public class SpeakersListFragment extends Fragment
-        implements AdapterView.OnItemClickListener, SpeakersAdapter.OnFilterChangeListener {
+        implements AdapterView.OnItemClickListener, SpeakersAdapter.OnFilterChangeListener, AsyncDownloader.JsonDataSetter {
 
     public static final String TAG = "SpeakersFragment";
     private View mLayoutContent, mLayoutPlaceholder;
@@ -42,12 +46,38 @@ public class SpeakersListFragment extends Fragment
 
     private ProgressBar mProgressBar;
 
+    private List<Speaker> speakers;
+    private SpeakerManager manager;
+
+    private AsyncDownloader downloader;
+
     private UpdatesManager.DataUpdatedListener updateListener = new UpdatesManager.DataUpdatedListener() {
         @Override
-        public void onDataUpdated( List<UpdateRequest> requests) {
+        public void onDataUpdated(List<UpdateRequest> requests) {
+
+            DatabaseUrl databaseUrl = new DatabaseUrl();
+            downloader = new AsyncDownloader(SpeakersListFragment.this);
+            downloader.execute(databaseUrl.getSpeakerUrl());
+
             initView();
         }
     };
+
+    public static SparseBooleanArray generateFirstLetterPositions(List<Speaker> speakers) {
+        SparseBooleanArray positions = new SparseBooleanArray();
+        int i = 0;
+        String firstNameLetter = "";
+
+        for (Speaker speaker : speakers) {
+            String letter = speaker.getFirstName().substring(0, 1).toUpperCase();
+            if (firstNameLetter.equals("") || !firstNameLetter.equals(letter)) {
+                firstNameLetter = letter;
+                positions.put(i, true);
+            }
+            i++;
+        }
+        return positions;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -63,7 +93,11 @@ public class SpeakersListFragment extends Fragment
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Model.instance().getUpdatesManager().registerUpdateListener(updateListener);
+
+        DatabaseUrl databaseUrl = new DatabaseUrl();
+        downloader = new AsyncDownloader(SpeakersListFragment.this);
+        downloader.execute(databaseUrl.getSpeakerUrl());
+
         initView();
     }
 
@@ -122,8 +156,7 @@ public class SpeakersListFragment extends Fragment
         new AsyncTask<Void, Void, List<Speaker>>() {
             @Override
             protected List<Speaker> doInBackground(Void... params) {
-                SpeakerManager manager = Model.instance().getSpeakerManager();
-                return manager.getSpeakers();
+                return speakers;
             }
 
             @Override
@@ -164,22 +197,6 @@ public class SpeakersListFragment extends Fragment
         mProgressBar.setVisibility(View.GONE);
     }
 
-    public static SparseBooleanArray generateFirstLetterPositions(List<Speaker> speakers) {
-        SparseBooleanArray positions = new SparseBooleanArray();
-        int i = 0;
-        String firstNameLetter = "";
-
-        for (Speaker speaker : speakers) {
-            String letter = speaker.getFirstName().substring(0, 1).toUpperCase();
-            if (firstNameLetter.equals("") || !firstNameLetter.equals(letter)) {
-                firstNameLetter = letter;
-                positions.put(i, true);
-            }
-            i++;
-        }
-        return positions;
-    }
-
     private void startSpeakersDetailsActivity(Speaker speaker) {
         Intent intent = new Intent(getActivity(), SpeakerDetailsActivity.class);
         intent.putExtra(SpeakerDetailsActivity.EXTRA_SPEAKER_ID, speaker.getId());
@@ -194,5 +211,15 @@ public class SpeakersListFragment extends Fragment
         } else {
             mTxtNoSearchResult.setVisibility(View.GONE);
         }
+    }
+
+    @Override
+    public void setJsonData(String str) {
+        Processor processor = new Processor(str);
+        speakers = processor.speakerProcessor();
+        manager = new SpeakerManager();
+        manager.storeResponse(speakers);
+
+        downloader.cancel(true);
     }
 }

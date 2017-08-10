@@ -9,7 +9,7 @@ public class DatabaseUrl {
 
     private volatile static DatabaseUrl uniqueInstance;
 
-    public static String baseUrl = "https://github.com/fossasia/open-event/blob/master/sample/FOSSASIA16";
+    public static String baseUrl = "https://raw.githubusercontent.com/fossasia/open-event/master/sample/FOSSASIA16";
     public static String eventsUrl = baseUrl +  "/event";
     public static String tracksUrl = baseUrl + "/tracks";
     public static String locationUrl = baseUrl + "/microlocations";
