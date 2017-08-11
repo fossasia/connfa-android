@@ -61,8 +61,19 @@ public class Processor {
                 speaker.setAvatarImageUrl(databaseUrl.getBaseUrl() + speakerJSONObject.getString("photo"));
                 speaker.setOrganization(speakerJSONObject.getString("organisation"));
                 speaker.setJobTitle(speakerJSONObject.getString("position"));
+                if (speaker.getJobTitle().equals("null")) {
+                    speaker.setJobTitle("");
+                }
                 speaker.setCharact(speakerJSONObject.getString("long_biography"));
-                speaker.setTwitterName(speakerJSONObject.getString("twitter"));
+                String twitter = speakerJSONObject.getString("twitter");
+                if (twitter.length() > 0) {
+                    twitter = twitter.substring(19);
+                    if (twitter.contains("/"))
+                        twitter = twitter.substring(1);
+                    speaker.setTwitterName(twitter);
+                } else {
+                    speaker.setTwitterName(null);
+                }
                 speaker.setWebSite(speakerJSONObject.getString("website"));
 
                 speakerList.add(speaker);

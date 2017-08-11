@@ -3,11 +3,9 @@ package com.ls.ui.fragment;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -54,12 +52,9 @@ public class SpeakersListFragment extends Fragment
     private UpdatesManager.DataUpdatedListener updateListener = new UpdatesManager.DataUpdatedListener() {
         @Override
         public void onDataUpdated(List<UpdateRequest> requests) {
-
             DatabaseUrl databaseUrl = new DatabaseUrl();
             downloader = new AsyncDownloader(SpeakersListFragment.this);
             downloader.execute(databaseUrl.getSpeakerUrl());
-
-            initView();
         }
     };
 
@@ -98,7 +93,6 @@ public class SpeakersListFragment extends Fragment
         downloader = new AsyncDownloader(SpeakersListFragment.this);
         downloader.execute(databaseUrl.getSpeakerUrl());
 
-        initView();
     }
 
     @Override
@@ -140,30 +134,6 @@ public class SpeakersListFragment extends Fragment
         if (mSpeakersAdapter != null) {
             startSpeakersDetailsActivity(mSpeakersAdapter.getItem(position));
         }
-    }
-
-    private void initView() {
-        if (getView() == null) {
-            return;
-        }
-
-        mLayoutContent = getView().findViewById(R.id.layout_content);
-        mLayoutPlaceholder = getView().findViewById(R.id.layout_placeholder);
-        mProgressBar = (ProgressBar) getView().findViewById(R.id.progressBar);
-        mTxtNoSearchResult = (TextView) getView().findViewById(R.id.txtSearchEmpty);
-        mListView = (ListView) getView().findViewById(R.id.listSpeakers);
-
-        new AsyncTask<Void, Void, List<Speaker>>() {
-            @Override
-            protected List<Speaker> doInBackground(Void... params) {
-                return speakers;
-            }
-
-            @Override
-            protected void onPostExecute(List<Speaker> speakers) {
-                updateView(speakers);
-            }
-        }.execute();
     }
 
     private void updateView(final List<Speaker> speakers) {
@@ -215,10 +185,23 @@ public class SpeakersListFragment extends Fragment
 
     @Override
     public void setJsonData(String str) {
+
         Processor processor = new Processor(str);
         speakers = processor.speakerProcessor();
         manager = new SpeakerManager();
         manager.storeResponse(speakers);
+
+        if (getView() == null) {
+            return;
+        }
+
+        mLayoutContent = getView().findViewById(R.id.layout_content);
+        mLayoutPlaceholder = getView().findViewById(R.id.layout_placeholder);
+        mProgressBar = (ProgressBar) getView().findViewById(R.id.progressBar);
+        mTxtNoSearchResult = (TextView) getView().findViewById(R.id.txtSearchEmpty);
+        mListView = (ListView) getView().findViewById(R.id.listSpeakers);
+
+        updateView(manager.getSpeakers());
 
         downloader.cancel(true);
     }
