@@ -169,7 +169,7 @@ public class UpdatesManager {
                 manager = Model.instance().getLocationManager();
                 break;*/
 
-            case PROGRAMS:
+            /*case PROGRAMS:
                 manager = Model.instance().getProgramManager();
                 break;
 
@@ -179,7 +179,7 @@ public class UpdatesManager {
 
             case SOCIALS:
                 manager = Model.instance().getSocialManager();
-                break;
+                break;*/
 
             case POIS:
                 manager = Model.instance().getPoisManager();

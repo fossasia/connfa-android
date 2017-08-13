@@ -151,7 +151,7 @@ public class Model {
     }
 
     public ProgramManager createProgramManager() {
-        return new ProgramManager(client);
+        return new ProgramManager();
     }
 
     public UpdatesManager getUpdatesManager() {
@@ -203,11 +203,11 @@ public class Model {
         //speakerManager = new SpeakerManager(client);
         //locationmanager = new LocationManager(client);
         socialManager = new SocialManager(client);
-        bofsManager = new BofsManager(client);
+        //bofsManager = new BofsManager(client);
         poisManager = new PoisManager(client);
         infoManager = new InfoManager(client);
-        programManager = new ProgramManager(client);
-        eventManager = new EventManager(client);
+        //programManager = new ProgramManager(client);
+        //eventManager = new EventManager(client);
         favoriteManager = new FavoriteManager();
 
         updatesManager = new UpdatesManager(client);

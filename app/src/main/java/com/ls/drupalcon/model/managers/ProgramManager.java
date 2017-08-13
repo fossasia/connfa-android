@@ -1,10 +1,7 @@
 package com.ls.drupalcon.model.managers;
 
-import com.ls.drupal.AbstractBaseDrupalEntity;
-import com.ls.drupal.DrupalClient;
 import com.ls.drupalcon.model.PreferencesManager;
 import com.ls.drupalcon.model.data.Event;
-import com.ls.drupalcon.model.requests.SessionsRequest;
 import com.ls.ui.adapter.item.EventListItem;
 import com.ls.utils.DateUtils;
 
@@ -13,21 +10,9 @@ import java.util.List;
 
 public class ProgramManager extends EventManager {
 
-    public ProgramManager(DrupalClient client) {
-        super(client);
+    public ProgramManager() {
     }
 
-    @Override
-    protected AbstractBaseDrupalEntity getEntityToFetch(DrupalClient client, Object requestParams) {
-        return new SessionsRequest(client);
-    }
-
-    @Override
-    protected String getEntityRequestTag(Object params) {
-        return "sessions";
-    }
-
-    @Override
     protected boolean storeResponse(Event.Holder requestResponse, String tag) {
         List<Event.Day> sessions = requestResponse.getDays();
         if (sessions == null) {
