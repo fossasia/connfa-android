@@ -15,7 +15,7 @@ public class ProgramStrategy implements EventHolderFragmentStrategy {
     @Override
     public List<Long> getDayList() {
         List<Long> dayList = new ArrayList<>();
-        ProgramManager programManager = Model.instance().getProgramManager();
+        ProgramManager programManager = new ProgramManager();
         dayList.addAll(programManager.getProgramDays());
         return dayList;
     }

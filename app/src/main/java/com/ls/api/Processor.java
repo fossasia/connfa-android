@@ -65,6 +65,8 @@ public class Processor {
                 event.setPlace(location.getString("name"));
                 event.setLink(eventJSONObject.getString("signup_url"));
 
+                Log.e("******name******",event.getName());
+
                 eventList.add(event);
             }
 

@@ -1,9 +1,23 @@
 package com.ls.ui.fragment;
 
+import android.app.Activity;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ListView;
+import android.widget.ProgressBar;
+
+import com.ls.api.AsyncDownloader;
+import com.ls.api.DatabaseUrl;
+import com.ls.api.Processor;
 import com.ls.drupalcon.R;
 import com.ls.drupalcon.model.EventGenerator;
 import com.ls.drupalcon.model.PreferencesManager;
 import com.ls.drupalcon.model.data.Event;
+import com.ls.drupalcon.model.managers.EventManager;
 import com.ls.sponsors.GoldSponsors;
 import com.ls.sponsors.SponsorItem;
 import com.ls.sponsors.SponsorManager;
@@ -12,28 +26,17 @@ import com.ls.ui.adapter.EventsAdapter;
 import com.ls.ui.adapter.item.EventListItem;
 import com.ls.ui.adapter.item.SimpleTimeRangeCreator;
 import com.ls.ui.adapter.item.TimeRangeItem;
-import com.ls.ui.drawer.DrawerMenu;
 import com.ls.ui.drawer.EventMode;
 import com.ls.ui.receiver.ReceiverManager;
 import com.ls.utils.AnalyticsManager;
 import com.ls.utils.DateUtils;
-
-import android.app.Activity;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ListView;
-import android.widget.ProgressBar;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Random;
 
-public class EventFragment extends Fragment implements EventsAdapter.Listener {
+public class EventFragment extends Fragment implements EventsAdapter.Listener, AsyncDownloader.JsonDataSetter {
 
     private static final String EXTRAS_ARG_MODE = "EXTRAS_ARG_MODE";
     private static final String EXTRAS_ARG_DAY = "EXTRAS_ARG_DAY";
@@ -50,12 +53,19 @@ public class EventFragment extends Fragment implements EventsAdapter.Listener {
 
     private EventGenerator mGenerator;
 
+    private List<Event> events;
+    private EventManager manager;
+
+    private AsyncDownloader downloader;
+
     private ReceiverManager receiverManager = new ReceiverManager(
             new ReceiverManager.FavoriteUpdatedListener() {
                 @Override
                 public void onFavoriteUpdated(long eventId, boolean isFavorite) {
                     if (mEventMode != EventMode.Favorites) {
-                        new LoadData().execute();
+                        DatabaseUrl databaseUrl = new DatabaseUrl();
+                        downloader = new AsyncDownloader(EventFragment.this);
+                        downloader.execute(databaseUrl.getEventsUrl());
                     }
                 }
             });
@@ -72,6 +82,7 @@ public class EventFragment extends Fragment implements EventsAdapter.Listener {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.e("***ON CREATE***","**ENTERED**");
         return inflater.inflate(R.layout.fr_event, container, false);
     }
 
@@ -80,7 +91,12 @@ public class EventFragment extends Fragment implements EventsAdapter.Listener {
         super.onActivityCreated(savedInstanceState);
         initData();
         initViews();
-        new LoadData().execute();
+        // new LoadData().execute();
+        Log.e("***async***","**ENTERED**");
+
+        DatabaseUrl databaseUrl = new DatabaseUrl();
+        downloader = new AsyncDownloader(EventFragment.this);
+        downloader.execute(databaseUrl.getEventsUrl());
         receiverManager.register(getActivity());
     }
 
@@ -120,7 +136,26 @@ public class EventFragment extends Fragment implements EventsAdapter.Listener {
         }
     }
 
-    class LoadData extends AsyncTask<Void, Void, List<EventListItem>> {
+    @Override
+    public void setJsonData(String str) {
+        Processor processor = new Processor(str);
+        events = processor.eventProcessor();
+        manager = new EventManager();
+
+        int i;
+        List<EventListItem> results = new ArrayList<>();
+        for (i = 0; i < events.size(); i++) {
+
+            EventListItem item = null;
+            item.setEvent(events.get(i));
+            results.add(item);
+        }
+
+        updateViewsUI(results);
+
+    }
+
+    /*class LoadData extends AsyncTask<Void, Void, List<EventListItem>> {
 
         @Override
         protected List<EventListItem> doInBackground(Void... params) {
@@ -131,7 +166,7 @@ public class EventFragment extends Fragment implements EventsAdapter.Listener {
         protected void onPostExecute(List<EventListItem> result) {
             updateViewsUI(result);
         }
-    }
+    }*/
 
     private void updateViewsUI(final List<EventListItem> eventList) {
         Activity activity = getActivity();
