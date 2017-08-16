@@ -3,6 +3,7 @@ package com.ls.ui.drawer;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 
 import com.ls.ui.fragment.AboutFragment;
 import com.ls.ui.fragment.EventHolderFragment;
@@ -32,16 +33,6 @@ public class DrawerManager {
 
 		switch (mode) {
 			case Program:
-				fragment = EventHolderFragment.newInstance(mode);
-				fragmentTag = EventHolderFragment.TAG;
-				break;
-
-			case Bofs:
-				fragment = EventHolderFragment.newInstance(mode);
-				fragmentTag = EventHolderFragment.TAG;
-				break;
-
-			case Social:
 				fragment = EventHolderFragment.newInstance(mode);
 				fragmentTag = EventHolderFragment.TAG;
 				break;

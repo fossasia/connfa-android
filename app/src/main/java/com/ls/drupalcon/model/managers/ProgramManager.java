@@ -51,28 +51,15 @@ public class ProgramManager extends EventManager {
     }
 
     public List<Long> getProgramDays() {
-        List<Long> levelIds = PreferencesManager.getInstance().loadExpLevel();
         List<Long> trackIds = PreferencesManager.getInstance().loadTracks();
-
-        if (levelIds.isEmpty() & trackIds.isEmpty()) {
-            return mEventDao.selectDistrictDateSafe(Event.PROGRAM_CLASS);
-
-        } else if (!levelIds.isEmpty() & !trackIds.isEmpty()) {
-            return mEventDao.selectDistrictDateByTrackAndLevelIdsSafe(Event.PROGRAM_CLASS, levelIds, trackIds);
-
-        } else if (!levelIds.isEmpty() & trackIds.isEmpty()) {
-            return mEventDao.selectDistrictDateByLevelIdsSafe(Event.PROGRAM_CLASS, levelIds);
-
-        } else {
-            return mEventDao.selectDistrictDateByTrackIdsSafe(Event.PROGRAM_CLASS, trackIds);
-        }
+        return mEventDao.selectDistrictDateByTrackIdsSafe(Event.PROGRAM_CLASS, trackIds);
     }
 
     public List<EventListItem> getProgramItemsSafe(int eventClass, long day, List<Long> levelIds, List<Long> trackIds) {
         return mEventDao.selectProgramItemsSafe(eventClass, day, levelIds, trackIds);
     }
 
-    public List<EventListItem> getFavoriteProgramItemsSafe(List<Long> favoriteEventIds, long day){
+    public List<EventListItem> getFavoriteProgramItemsSafe(List<Long> favoriteEventIds, long day) {
         return mEventDao.selectFavoriteProgramItemsSafe(favoriteEventIds, day);
     }
 }

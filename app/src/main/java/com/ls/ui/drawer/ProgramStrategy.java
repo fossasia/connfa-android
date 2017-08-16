@@ -1,7 +1,6 @@
 package com.ls.ui.drawer;
 
 import com.ls.drupalcon.R;
-import com.ls.drupalcon.model.Model;
 import com.ls.drupalcon.model.UpdateRequest;
 import com.ls.drupalcon.model.managers.ProgramManager;
 
