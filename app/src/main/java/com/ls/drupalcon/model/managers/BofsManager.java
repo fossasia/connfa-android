@@ -13,21 +13,10 @@ import java.util.List;
 
 public class BofsManager extends EventManager {
 
-    public BofsManager(DrupalClient client) {
-        super(client);
+    public BofsManager() {
+
     }
 
-    @Override
-    protected AbstractBaseDrupalEntity getEntityToFetch(DrupalClient client, Object requestParams) {
-        return new BofsRequest(client);
-    }
-
-    @Override
-    protected String getEntityRequestTag(Object params) {
-        return "bofs";
-    }
-
-    @Override
     protected boolean storeResponse(Event.Holder requestResponse, String tag) {
         List<Event.Day> bofs = requestResponse.getDays();
         if (bofs == null) {

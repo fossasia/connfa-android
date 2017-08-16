@@ -15,7 +15,7 @@ public class BofsStrategy implements EventHolderFragmentStrategy {
      @Override
     public List<Long> getDayList() {
         List<Long> dayList = new ArrayList<>();
-        BofsManager manager = Model.instance().getBofsManager();
+        BofsManager manager = new BofsManager();
         dayList.addAll(manager.getBofsDays());
         return dayList;
     }

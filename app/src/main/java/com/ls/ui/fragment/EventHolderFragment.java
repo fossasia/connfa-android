@@ -1,14 +1,22 @@
 package com.ls.ui.fragment;
 
 import com.astuetz.PagerSlidingTabStrip;
+import com.ls.api.AsyncDownloader;
+import com.ls.api.DatabaseUrl;
+import com.ls.api.Processor;
 import com.ls.drupalcon.R;
 import com.ls.drupalcon.app.App;
 import com.ls.drupalcon.model.Model;
 import com.ls.drupalcon.model.PreferencesManager;
 import com.ls.drupalcon.model.UpdateRequest;
 import com.ls.drupalcon.model.UpdatesManager;
+import com.ls.drupalcon.model.data.Event;
+import com.ls.drupalcon.model.data.Speaker;
+import com.ls.drupalcon.model.managers.ProgramManager;
+import com.ls.drupalcon.model.managers.SpeakerManager;
 import com.ls.ui.activity.HomeActivity;
 import com.ls.ui.adapter.BaseEventDaysPagerAdapter;
+import com.ls.ui.adapter.EventsAdapter;
 import com.ls.ui.drawer.BofsStrategy;
 import com.ls.ui.drawer.EventHolderFragmentStrategy;
 import com.ls.ui.drawer.EventMode;
@@ -27,6 +35,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -40,7 +49,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class EventHolderFragment extends Fragment {
+public class EventHolderFragment extends Fragment implements AsyncDownloader.JsonDataSetter{
 
     public static final String TAG = "ProjectsFragment";
     private static final String EXTRAS_ARG_MODE = "EXTRAS_ARG_MODE";
@@ -57,6 +66,10 @@ public class EventHolderFragment extends Fragment {
     private EventHolderFragmentStrategy strategy;
     private List<UpdateRequest> requests = new ArrayList<>();
 
+    private AsyncDownloader downloader;
+
+    private List<Event> events;
+    private ProgramManager manager;
 
     private UpdatesManager.DataUpdatedListener updateReceiver = new UpdatesManager.DataUpdatedListener() {
         @Override
@@ -121,7 +134,7 @@ public class EventHolderFragment extends Fragment {
 
         initData();
         initView();
-        new LoadData().execute();
+        loadData();
     }
 
     @Override
@@ -139,12 +152,6 @@ public class EventHolderFragment extends Fragment {
                 switch (eventMode) {
                     case Program:
                         strategy = new ProgramStrategy();
-                        break;
-                    case Bofs:
-                        strategy = new BofsStrategy();
-                        break;
-                    case Social:
-                        strategy = new SocialStrategy();
                         break;
                     case Favorites:
                         strategy = new FavoritesStrategy();
@@ -177,23 +184,26 @@ public class EventHolderFragment extends Fragment {
 
     }
 
-    class LoadData extends AsyncTask<Void, Void, List<Long>> {
-
-        @Override
-        protected List<Long> doInBackground(Void... params) {
-            return strategy.getDayList();
-        }
-
-        @Override
-        protected void onPostExecute(List<Long> result) {
-            updateViews(result);
-        }
+    public void loadData()
+    {
+        DatabaseUrl databaseUrl = new DatabaseUrl();
+        downloader = new AsyncDownloader(EventHolderFragment.this);
+        downloader.execute(databaseUrl.getSessionurl());
     }
 
+    @Override
+    public void setJsonData(String str) {
+        Processor processor = new Processor(str);
+        events = processor.eventProcessor();
+        manager = new ProgramManager();
+        manager.storeResponse(events);
+        updateViews(manager.getProgramDays());
+    }
 
     private void updateViews(List<Long> dayList) {
 
         if (dayList.isEmpty()) {
+            Log.e("Hello",":(*************");
             mPagerTabs.setVisibility(View.GONE);
             mLayoutPlaceholder.setVisibility(View.VISIBLE);
 
@@ -254,7 +264,7 @@ public class EventHolderFragment extends Fragment {
 
     private void updateData(List<UpdateRequest> requests) {
         if (strategy.update(requests)) {
-            new LoadData().execute();
+            loadData();
         }
     }
 
@@ -262,7 +272,7 @@ public class EventHolderFragment extends Fragment {
     private void updateFavorites() {
         if (getView() != null) {
             if (strategy.updateFavorites()) {
-                new LoadData().execute();
+                loadData();
             }
         }
     }

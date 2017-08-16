@@ -1,5 +1,15 @@
 package com.ls.ui.fragment;
 
+import android.app.Activity;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ListView;
+import android.widget.ProgressBar;
+
 import com.ls.drupalcon.R;
 import com.ls.drupalcon.model.EventGenerator;
 import com.ls.drupalcon.model.PreferencesManager;
@@ -12,21 +22,10 @@ import com.ls.ui.adapter.EventsAdapter;
 import com.ls.ui.adapter.item.EventListItem;
 import com.ls.ui.adapter.item.SimpleTimeRangeCreator;
 import com.ls.ui.adapter.item.TimeRangeItem;
-import com.ls.ui.drawer.DrawerMenu;
 import com.ls.ui.drawer.EventMode;
 import com.ls.ui.receiver.ReceiverManager;
 import com.ls.utils.AnalyticsManager;
 import com.ls.utils.DateUtils;
-
-import android.app.Activity;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ListView;
-import android.widget.ProgressBar;
 
 import java.util.ArrayList;
 import java.util.Calendar;

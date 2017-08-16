@@ -1,7 +1,6 @@
 package com.ls.ui.drawer;
 
 import com.ls.drupalcon.R;
-import com.ls.drupalcon.model.Model;
 import com.ls.drupalcon.model.UpdateRequest;
 import com.ls.drupalcon.model.managers.ProgramManager;
 
@@ -15,7 +14,7 @@ public class ProgramStrategy implements EventHolderFragmentStrategy {
     @Override
     public List<Long> getDayList() {
         List<Long> dayList = new ArrayList<>();
-        ProgramManager programManager = Model.instance().getProgramManager();
+        ProgramManager programManager = new ProgramManager();
         dayList.addAll(programManager.getProgramDays());
         return dayList;
     }
