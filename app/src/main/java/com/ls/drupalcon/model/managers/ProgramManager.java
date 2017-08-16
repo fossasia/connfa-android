@@ -1,58 +1,68 @@
 package com.ls.drupalcon.model.managers;
 
-import com.ls.drupalcon.model.PreferencesManager;
-import com.ls.drupalcon.model.data.Event;
-import com.ls.ui.adapter.item.EventListItem;
-import com.ls.utils.DateUtils;
+import android.util.Log;
 
-import java.util.Date;
+import com.ls.drupalcon.app.App;
+import com.ls.drupalcon.model.PreferencesManager;
+import com.ls.drupalcon.model.dao.EventDao;
+import com.ls.drupalcon.model.data.Event;
+import com.ls.drupalcon.model.data.Track;
+import com.ls.ui.adapter.item.EventListItem;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class ProgramManager extends EventManager {
 
+    private EventDao mEventDao;
+
     public ProgramManager() {
+        mEventDao = getEventDao();
     }
 
-    protected boolean storeResponse(Event.Holder requestResponse, String tag) {
-        List<Event.Day> sessions = requestResponse.getDays();
+    public boolean storeResponse(List<Event> sessions) {
+
         if (sessions == null) {
             return false;
         }
 
         List<Long> ids = mEventDao.selectFavoriteEventsSafe();
-        for (Event.Day day : sessions) {
 
-            for (Event event : day.getEvents()) {
-                if (event != null) {
+        int i;
+        for (i = 0; i < sessions.size(); i++)
+            if (sessions.get(i) != null) {
 
-                    Date date = DateUtils.getInstance().convertEventDayDate(day.getDate());
-                    if (date != null) {
-                        event.setDate(date);
-                    }
-                    event.setEventClass(Event.PROGRAM_CLASS);
-
-                    for (long id : ids) {
-                        if (event.getId() == id) {
-                            event.setFavorite(true);
-                            break;
-                        }
-                    }
-
-                    mEventDao.saveOrUpdateSafe(event);
-                    saveEventSpeakers(event);
-
-                    if (event.isDeleted()) {
-                        deleteEvent(event);
+                for (long id : ids) {
+                    if (sessions.get(i).getId() == id) {
+                        sessions.get(i).setFavorite(true);
+                        break;
                     }
                 }
+
+                //saveEventSpeakers(sessions.get(i));
+                mEventDao.saveOrUpdateSafe(sessions.get(i));
+
+                if (sessions.get(i).isDeleted()) {
+                    deleteEvent(sessions.get(i));
+                }
             }
-        }
+
         return true;
     }
 
     public List<Long> getProgramDays() {
-        List<Long> trackIds = PreferencesManager.getInstance().loadTracks();
-        return mEventDao.selectDistrictDateByTrackIdsSafe(Event.PROGRAM_CLASS, trackIds);
+        List<Long> trackIds = new ArrayList<>();
+        TracksManager tracksManager = new TracksManager();
+        List<Track> tracks;
+        tracks = tracksManager.getTracks();
+
+        int i;
+
+        for (i = 0; i < tracks.size(); i++) {
+            trackIds.add(tracks.get(i).getId());
+        }
+        //return mEventDao.selectDistrictDateByTrackIdsSafe(Event.PROGRAM_CLASS, trackIds);
+        return trackIds;
     }
 
     public List<EventListItem> getProgramItemsSafe(int eventClass, long day, List<Long> levelIds, List<Long> trackIds) {

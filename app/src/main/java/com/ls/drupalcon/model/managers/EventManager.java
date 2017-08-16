@@ -21,8 +21,8 @@ public class EventManager {
         List<Long> speakerEventIds = mEventDao.selectEventSpeakersSafe(eventId);
 
         for (Long speakerId : data.getSpeakers()) {
-            if (!speakerEventIds.contains(speakerId)) {
-                mEventDao.insertEventSpeaker(eventId, speakerId);
+           if (!speakerEventIds.contains(speakerId)) {
+               // mEventDao.insertEventSpeaker(eventId, speakerId);
             }
 
             speakerEventIds.remove(speakerId);

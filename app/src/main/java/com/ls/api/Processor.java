@@ -43,6 +43,7 @@ public class Processor {
                 event = new Event();
 
                 event.setId(eventJSONObject.getLong("id"));
+                event.setName(eventJSONObject.getString("title"));
                 event.setFromTime(eventJSONObject.getString("start_time"));
                 event.setToTime(eventJSONObject.getString("end_time"));
 
@@ -54,18 +55,15 @@ public class Processor {
                 JSONArray speakersArray = eventJSONObject.getJSONArray("speakers");
 
                 for (j = 0; j < speakersArray.length(); j++) {
-                    JSONObject speaker = speakersArray.getJSONObject(i);
+                    JSONObject speaker = speakersArray.getJSONObject(j);
                     speakers.add(speaker.getLong("id"));
                 }
 
                 event.setSpeakers(speakers);
-                event.setName(eventJSONObject.getString("title"));
 
                 JSONObject location = eventJSONObject.getJSONObject("microlocation");
                 event.setPlace(location.getString("name"));
                 event.setLink(eventJSONObject.getString("signup_url"));
-
-                Log.e("******name******",event.getName());
 
                 eventList.add(event);
             }

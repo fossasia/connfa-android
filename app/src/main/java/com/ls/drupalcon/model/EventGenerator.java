@@ -28,36 +28,13 @@ import java.util.List;
 public class EventGenerator {
 
     private EventManager mEventManager;
-    private BofsManager mBofsManager;
-    private SocialManager mSocialManager;
     private ProgramManager mProgramManager;
 
     private boolean mShouldBreak;
 
     public EventGenerator() {
-        mEventManager = Model.instance().getEventManager();
-        mBofsManager = Model.instance().getBofsManager();
-        mSocialManager = Model.instance().getSocialManager();
-        mProgramManager = Model.instance().createProgramManager();
-    }
-
-    public List<EventListItem> generate(long day, int eventClass, @NotNull EventItemCreator eventItemCreator) {
-        List<EventListItem> eventListItems;
-        if (eventClass == Event.SOCIALS_CLASS) {
-            eventListItems = mSocialManager.getSocialItemsSafe(day);
-        } else {
-            eventListItems = mBofsManager.getBofsItemsSafe(day);
-        }
-        if (mShouldBreak) {
-            return new ArrayList<>();
-        }
-
-        List<TimeRange> ranges = mEventManager.getDistrictTimeRangeSafe(eventClass, day);
-        if (mShouldBreak) {
-            return new ArrayList<>();
-        }
-
-        return getEventItems(eventItemCreator, eventListItems, ranges);
+        mEventManager = new EventManager();
+        mProgramManager = new ProgramManager();
     }
 
     public List<EventListItem> generate(long day, int eventClass, List<Long> levelIds, List<Long> trackIds, @NotNull EventItemCreator eventItemCreator) {
