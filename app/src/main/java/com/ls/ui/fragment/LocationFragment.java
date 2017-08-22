@@ -130,7 +130,6 @@ public class LocationFragment extends Fragment implements CustomMapFragment.OnAc
                 if (previousMarker != null) {
                     previousMarker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
                 }
-
                 marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
                 previousMarker = marker;
 
