@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -34,6 +35,7 @@ public class LocationFragment extends Fragment implements CustomMapFragment.OnAc
     private static final int ZOOM_LEVEL = 15;
     private static final int TILT_LEVEL = 0;
     private static final int BEARING_LEVEL = 0;
+    private Marker previousMarker = null;
 
     public static final String TAG = "LocationsFragment";
     private GoogleMap mGoogleMap;
@@ -125,6 +127,13 @@ public class LocationFragment extends Fragment implements CustomMapFragment.OnAc
             public boolean onMarkerClick(Marker marker) {
                 String locAddress = marker.getTitle();
                 fillTextViews(locAddress);
+                if (previousMarker != null) {
+                    previousMarker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                }
+
+                marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+                previousMarker = marker;
+
                 return true;
             }
         });
@@ -144,7 +153,7 @@ public class LocationFragment extends Fragment implements CustomMapFragment.OnAc
         int i = locAddress.indexOf("#");
 
         locationName = locAddress.substring(0, i);
-        address = locAddress.substring(i+1);
+        address = locAddress.substring(i + 1);
         txtAmsterdam.setText(locationName);
         txtAddress.setText(address);
 
