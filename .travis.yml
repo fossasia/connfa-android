@@ -1,0 +1,24 @@
+language: android
+jdk: 
+ - oraclejdk8
+# Use the Travis Container-Based Infrastructure
+android:
+  components:
+    - build-tools-23.0.1
+    - android-23
+    
+    # For Google APIs
+    - addon-google_apis-google-$ANDROID_API_LEVEL
+    # Google Play Services
+    - extra-google-google_play_services
+    # Support library
+    - extra-android-support
+    # Latest artifacts in local repository
+    - extra-google-m2repository
+    - extra-android-m2repository
+    - android-sdk-license-.+
+    - '.+'
+    # Specify at least one system image
+    - sys-img-armeabi-v7a-google_apis-$ANDROID_API_LEVEL
+    - sys-img-armeabi-v7a-android-$ANDROID_API_LEVEL_23
+    
