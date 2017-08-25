@@ -4,6 +4,8 @@ jdk:
 # Use the Travis Container-Based Infrastructure
 android:
   components:
+    - platform-tools
+    - tools
     - build-tools-23.0.1
     - android-23
     
