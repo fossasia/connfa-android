@@ -21,9 +21,9 @@ android:
     - extra-android-m2repository
     - android-sdk-license-.+
     - '.+'
-    # Specify at least one system image
-    - sys-img-armeabi-v7a-google_apis-$ANDROID_API_LEVEL
-    - sys-img-armeabi-v7a-android-$ANDROID_API_LEVEL_23
 
 before_script:
   - chmod +x gradlew    
+
+script:
+  - ./gradlew build
